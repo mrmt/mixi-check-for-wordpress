@@ -116,7 +116,32 @@ function mixi_check_add_head(){
 }
 
 function mixi_check_plugin_menu(){
+
+    // add_menu_page の引数に使われている plugins_url() は
+    // http://codex.wordpress.org/Function_Reference/plugins_url
+    // によれば、WordPress 2.6.0 から用意されている関数らしい。
+    // なので WordPress 2.5.1 で動かすには、最後の引数ごと
+    // 消してやる必要があった。
+    // (そもそも add_menu_page() のアイコン指定引数自体が
+    // WordPress 2.7 以降でしか意味がないらしい)
+
+    // これは後ろ向きな情報なので
+    // 「mixi-check.php は WordPress 2.6.0 以前では動きません」とか
+    // 言い放つのもいいと思う。
+
     add_menu_page('mixiチェック', 'mixiチェック', 8, basename(__file__), '', plugins_url('m_icon.png',__FILE__));
+
+    // WordPress 2.5.1 で動かすためには、
+    // 最初の add_submenu_page() 呼び出しの
+    // 第一引数の basename(__file__) を 'admin.php' としてやる必要があった。
+    // こうしないと, どうも mixi-check.php が二回評価されてしまうようで、
+    // 「関数 mixi_check_plugin_menu() を二回定義しようとしている」
+    // などと php パーサに怒られた。
+    // これは WordPrss 2.5.1 当時のバグなのかもしれない。
+
+    // これも同じく後ろ向きな情報なので、
+    // 本流のコードを修正する必要はないと思う
+
     add_submenu_page(basename(__file__), '設定', '設定', 'manage_options', basename(__file__), 'mixicheck_plugin_options');
     add_submenu_page(basename(__file__), '埋め込みコード', '埋め込みコード', 'manage_options', widget, 'mixicheck_plugin_widget');
 }
